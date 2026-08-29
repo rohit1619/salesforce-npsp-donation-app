@@ -1,0 +1,8 @@
+.sf/
+.sfdx/
+.localSourceTracking
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
