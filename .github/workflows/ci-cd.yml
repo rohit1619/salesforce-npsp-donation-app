@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - QA
-    types: [opened,synchronize,reopened]
 
 jobs:
   salesforce-code-analyzer-workflow:
