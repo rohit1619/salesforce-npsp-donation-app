@@ -3,7 +3,7 @@ name: Salesforce CI/CD Pipeline
 on:
   pull_request:
     branches:
-      - QA
+      - main
     workflow_dispatch:
 
 jobs:
