@@ -3,7 +3,7 @@ name: Salesforce CI/CD Pipeline
 on:
   pull_request:
     branches:
-      -qa
+      -QA
     types: [opened,synchronize,reopened]
 
 jobs:
