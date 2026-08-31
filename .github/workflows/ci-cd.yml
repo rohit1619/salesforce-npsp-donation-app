@@ -1,27 +1,66 @@
 name: Salesforce CI/CD Pipeline
 
 on:
-  push:
-    branches: [ "main", "QA" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
+    paths:
+      - 'force-app/**'
+  push:
+    branches: [ main ]
+    paths:
+      - 'force-app/**'
 
 jobs:
-  build-and-test:
+  validate-or-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      # 1. Checkout the source code
+      - name: 'Checkout Source Code'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '24' # Updated to match current GitHub runner standards
-        cache: 'npm'
+      # 2. Install Node.js
+      - name: 'Setup Node.js Environment'
+        uses: actions/setup-node@v4
+        with:
+          node-node-version: '20'
 
-    - name: Install Project Dependencies
-      run: npm install --legacy-peer-deps
+      # 3. Install Salesforce CLI (sf)
+      - name: 'Install Salesforce CLI'
+        run: |
+          npm install -g @salesforce/cli
+          sf --version
 
-    - name: Run LWC Jest Tests
-      run: npm run test:unit --if-present
+      # 4. Populate the JWT Secret Key file dynamically
+      - name: 'Populate JWT Key'
+        run: |
+          echo "${{ secrets.SFDX_JWT_KEY }}" > server.key
+
+      # 5. Authenticate to Salesforce Org using JWT
+      - name: 'Authenticate to Salesforce Org'
+        run: |
+          sf org login jwt \
+            --username ${{ secrets.SFDX_USERNAME }} \
+            --jwt-key-file server.key \
+            --client-id ${{ secrets.SFDX_CONSUMER_KEY }} \
+            --instance-url ${{ secrets.SFDX_INSTANCE_URL }} \
+            --set-default
+
+      # 6. RUN VALIDATION ONLY (On Pull Request)
+      - name: 'Validate Metadata (PR Only)'
+        if: github.event_name == 'pull_request'
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --test-level RunLocalTests \
+            --dry-run
+
+      # 7. RUN ACTUAL DEPLOYMENT (On Merge/Push to Main)
+      - name: 'Deploy Metadata to Org (Push Only)'
+        if: github.event_name == 'push'
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --test-level RunLocalTests
