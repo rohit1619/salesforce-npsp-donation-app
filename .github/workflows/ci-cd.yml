@@ -1,16 +1,22 @@
 name: Salesforce CI/CD Pipeline
 
 on:
-  push:
+  pull_request:
     branches:
-      - main
+      -qa
+    types: [opened,synchronize,reopened]
 
 jobs:
-  say-hello:
+  salesforce-code-analyzer-workflow:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Print Hello
-        run: echo "🎉 Hello, GitHub Actions!"
+      - name: 'Checkout source code'
+        uses: actions/checkout@v4
+        
+      - name: 'Run PMD Cloud Scanner'
+        uses: pmd/pmd-github-action@v2
+        with:
+          version: '7.0.0' # Uses a stable, modern PMD engine release
+          source: 'force-app' # Points strictly to your Salesforce metadata directory
+          rulesets: 'rulesets/apex/quickstart.xml' # Default built-in Salesforce ruleset
+          analyzeModifiedFilesOnly: false
