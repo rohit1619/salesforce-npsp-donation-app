@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
         - main
-        - qa
         - QA
   workflow_dispatch: # Moved out so it aligns cleanly under 'on'
 
