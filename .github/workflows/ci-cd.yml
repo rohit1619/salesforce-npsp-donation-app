@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main
-    workflow_dispatch:
+  workflow_dispatch: # Moved out so it aligns cleanly under 'on'
 
 jobs:
   salesforce-code-analyzer-workflow:
@@ -16,7 +16,7 @@ jobs:
       - name: 'Run PMD Cloud Scanner'
         uses: pmd/pmd-github-action@v2
         with:
-          version: '7.0.0' # Uses a stable, modern PMD engine release
-          source: 'force-app' # Points strictly to your Salesforce metadata directory
-          rulesets: 'rulesets/apex/quickstart.xml' # Default built-in Salesforce ruleset
+          version: '7.0.0' 
+          source: 'force-app' 
+          rulesets: 'rulesets/apex/quickstart.xml' 
           analyzeModifiedFilesOnly: false
