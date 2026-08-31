@@ -1,47 +1,23 @@
-name: CI/CD Pipeline
+name: Salesforce CI/CD Pipeline
 
-# 1. Trigger the pipeline on specific branch events
 on:
-  push:
-    branches: [ "main", "QA" ]
   pull_request:
-    branches: [ "main" ]
+    branches:
+        - main
+        - qa
+  workflow_dispatch: # Moved out so it aligns cleanly under 'on'
 
 jobs:
-  # JOB 1: Build and Test your code
-  build-and-test:
+  salesforce-code-analyzer-workflow:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
-
-    # Change this step depending on your tech stack (Node, Python, Java, etc.)
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-
-    - name: Install Dependencies
-      run: npm install
-
-    - name: Run Code Linter (Formatting check)
-      run: npm run lint --if-present
-
-    - name: Run Automated Tests
-      run: npm test
-
-  # JOB 2: Deploy your code (Runs ONLY if tests pass and it's the main branch)
-  deploy:
-    needs: build-and-test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
-
-    - name: Simulate Production Deployment
-      run: |
-        echo "🚀 Deploying to the production server..."
-        echo "Code successfully deployed!"
+      - name: 'Checkout source code'
+        uses: actions/checkout@v4
+        
+      - name: 'Run PMD Cloud Scanner'
+        uses: pmd/pmd-github-action@v2
+        with:
+          version: '7.0.0' 
+          source: 'force-app' 
+          rulesets: 'rulesets/apex/quickstart.xml' 
+          analyzeModifiedFilesOnly: false
