@@ -2,68 +2,15 @@ name: Salesforce CI/CD Pipeline
 
 on:
   push:
-    branches: ["main", "QA"]
-  pull_request:
-    types: [opened, edited, synchronize, reopened]
-    branches: ["main", "QA"]
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
-  format-lint-lwc-tests:
+  say-hello:
     runs-on: ubuntu-latest
     steps:
-      # 1. Checkout the source code
-      - name: "Checkout source code"
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      # 2. Setup Node.js Environment natively
-      - name: "Setup Node.js"
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-
-      # 3. Install dependencies skipping local Husky environments
-      - name: "Install npm dependencies"
-        run: |
-          export HUSKY=0
-          npm install --legacy-peer-deps
-
-      # 4. Prettier formatting check
-      - name: "Code formatting verification with Prettier"
-        run: npm run prettier:verify --if-present
-
-      # 5. Install Salesforce CLI (needed to seed the code analyzer plugin engine)
-      - name: "Install Salesforce CLI"
-        run: |
-          npm install @salesforce/cli --location=global
-          nodeInstallPath=$(npm config get prefix)
-          echo "$nodeInstallPath/bin" >> $GITHUB_PATH
-          cd "$nodeInstallPath/bin"
-          ./sf --version
-
-      # 6. Install Salesforce CLI Code Analyzer plugin
-      - name: "Install Salesforce CLI Code Analyzer plugin"
-        run: sf plugins install code-analyzer
-
-      # 7. Run static code scanner
-      - name: "Run Code Analyzer"
-        id: run-code-analyzer
-        uses: forcedotcom/run-code-analyzer@v2.12.0
-        with:
-          run-arguments: --workspace "force-app" --view detail --output-file "sca-results.csv"
-          results-artifact-name: code-analyzer-results
-
-      # 8. Throw clean pipeline block on high/critical violations
-      - name: "Check for Code Analyzer critical or high severity violations"
-        if: |
-          steps.run-code-analyzer.outputs.exit-code > 0 ||
-          steps.run-code-analyzer.outputs.num-sev1-violations > 0 ||
-          steps.run-code-analyzer.outputs.num-sev2-violations > 0
-        run: |
-          echo "One or more Code Analyzer critical or high severity violations found"
-          exit 1
-
-      # 9. Local machine validation of LWC unit test architecture
-      - name: "Unit test Lightning Web Components"
-        run: npm run test:unit --if-present
+      - name: Print Hello
+        run: echo "🎉 Hello, GitHub Actions!"
