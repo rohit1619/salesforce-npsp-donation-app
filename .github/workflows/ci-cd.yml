@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - QA
+    workflow_dispatch:
 
 jobs:
   salesforce-code-analyzer-workflow:
