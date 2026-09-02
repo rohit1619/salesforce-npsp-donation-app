@@ -1,0 +1,49 @@
+<template>
+    <lightning-card title="Make a Donation" icon-name="custom:custom17">
+        <div class="slds-p-around_medium">
+            
+            <!-- Success Message Screen -->
+            <template if:true={isSubmitted}>
+                <div class="slds-notify slds-notify_alert slds-alert_success" role="alert">
+                    <h2>Thank you for your generous support! Your mock token is: {mockToken}</h2>
+                </div>
+            </template>
+
+            <!-- Main Form Screen -->
+            <template if:false={isSubmitted}>
+                
+                <!-- Step 1: Donor Information -->
+                <div class="slds-form-element slds-m-bottom_medium">
+                    <lightning-input type="text" label="First Name" name="firstName" value={donor.firstName} onchange={handleInputChange} required></lightning-input>
+                    <lightning-input type="text" label="Last Name" name="lastName" value={donor.lastName} onchange={handleInputChange} required></lightning-input>
+                    <lightning-input type="email" label="Email Address" name="email" value={donor.email} onchange={handleInputChange} required></lightning-input>
+                </div>
+
+                <!-- Step 2: Donation Preferences -->
+                <div class="slds-form-element slds-m-bottom_medium">
+                    <lightning-radio-group name="donationType" label="Donation Type" options={donationTypeOptions} value={donationType} onchange={handleTypeChange} type="button"></lightning-radio-group>
+                    
+                    <!-- Conditional Recurring Frequency Fields -->
+                    <template if:true={isRecurring}>
+                        <div class="slds-m-top_small">
+                            <lightning-combobox name="frequency" label="Frequency" value={frequency} placeholder="Select Frequency" options={frequencyOptions} onchange={handleInputChange} required></lightning-combobox>
+                        </div>
+                    </template>
+
+                    <lightning-input type="number" label="Donation Amount ($)" name="amount" value={amount} min="1" step="0.01" onchange={handleInputChange} required class="slds-m-top_small"></lightning-input>
+                </div>
+
+                <!-- Step 3: Mock Payment Section -->
+                <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                    <span class="slds-text-title_caps">Mock Credit Card Secure Entry</span>
+                    <lightning-input type="text" label="Cardholder Name" name="cardName" required></lightning-input>
+                    <lightning-input type="text" label="Card Number" placeholder="4111 1111 1111 1111" required></lightning-input>
+                </div>
+
+                <!-- Action Button -->
+                <lightning-button variant="brand" label="Process Secure Donation" onclick={handleSubmit} class="slds-align_absolute-center"></lightning-button>
+            </template>
+
+        </div>
+    </lightning-card>
+</template> 
