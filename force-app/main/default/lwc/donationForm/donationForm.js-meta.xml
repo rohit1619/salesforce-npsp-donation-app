@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LightningComponentBundle xmlns="http://sforce.com">
     <apiVersion>61.0</apiVersion>
-    <isExposed>true</isExposed>
+    <isExposed>true</isExposed> 
     <masterLabel>Donation Form Component</masterLabel>
     <targets>
         <target>lightningCommunity__Page</target>
